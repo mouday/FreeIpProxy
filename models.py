@@ -5,8 +5,12 @@
 # @Author  : Peng Shiyu
 
 from peewee import *
+import os
 
-db = SqliteDatabase("proxy.db")
+BASE = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE, "proxy.db")
+
+db = SqliteDatabase(db_path)
 
 
 class BaseModel(Model):

@@ -8,7 +8,7 @@
 import json
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask, jsonify
 
 from check import check_all
 from models import ProxyModel
@@ -32,7 +32,7 @@ def get_proxy():
             v = v.strftime("%Y-%m-%d %H:%M:%S")
         item[k] = v
 
-    return json.dumps(item)
+    return jsonify(item)
 
 
 @app.route("/get_list/<int:count>")
@@ -49,33 +49,46 @@ def get_proxy_list(count):
             item[k] = v
         lst.append(item)
 
-    return json.dumps(lst)
+    return jsonify(lst)
 
 
 @app.route("/crawl")
 def crawl_proxy_all():
     crawl_all()
-    return "ok"
+    return jsonify({
+            "status": 0,
+            "msg": "ok"
+        })
 
 
 @app.route("/crawl/<int:index>")
 def crawl_proxy(index):
     crawl(index)
-    return "ok"
+    return jsonify({
+        "status": 0,
+        "msg": "ok"
+    })
 
 
 @app.route("/delete/<uid>")
 def delete_proxy(uid):
     ret = ProxyModel.delete().where(ProxyModel.id == uid).execute()
-    return "ret: %s" % ret
+    return jsonify({
+        "status": 0,
+        "msg": "ok",
+        "rows": ret
+    })
 
 
 @app.route("/check")
 def check_proxy():
     check_all()
-    return "check ok"
+    return jsonify({
+        "status": 0,
+        "msg": "ok",
+    })
 
 
 if __name__ == '__main__':
     start_scheduler()
-    app.run()
+    app.run(host="0.0.0.0", port=8002, debug=True)
